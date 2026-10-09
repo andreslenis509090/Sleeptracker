@@ -1,639 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Monitoreo de Higiene del Sueño - Demo Strategy</title>
-<style>
-  :root {
-    --bg: #0f1729;
-    --bg-card: #1a2340;
-    --bg-card-alt: #1e2a4a;
-    --bg-input: #141e36;
-    --border: #2a3a5c;
-    --border-focus: #6c8cff;
-    --text: #e4e8f1;
-    --text-muted: #8a96b2;
-    --text-dim: #5c6a88;
-    --accent: #6c8cff;
-    --accent-hover: #8aa4ff;
-    --accent-glow: rgba(108,140,255,.15);
-    --bar-normal: #6c8cff;
-    --bar-normal-top: #8aa4ff;
-    --bar-crit: #ff5c6c;
-    --bar-crit-top: #ff7a88;
-    --threshold: #f59e0b;
-    --success-bg: rgba(34,197,94,.12);
-    --success-border: #22c55e;
-    --success-text: #86efac;
-    --error-bg: rgba(239,68,68,.12);
-    --error-border: #ef4444;
-    --error-text: #fca5a5;
-    --info-bg: rgba(108,140,255,.08);
-    --info-border: var(--accent);
-    --radius: 12px;
-    --radius-sm: 8px;
-    --shadow: 0 4px 24px rgba(0,0,0,.3);
-    --transition: .2s ease;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-
-  /* ─── Header ─── */
-  header {
-    background: linear-gradient(135deg, #1a2340 0%, #253565 100%);
-    padding: 28px 32px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
-  }
-  header .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 10px;
-    background: rgba(108,140,255,.12);
-    border-radius: 12px;
-  }
-  header .icon svg { width: 24px; height: 24px; }
-  header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -.3px;
-    color: #fff;
-  }
-  header p {
-    margin-top: 6px;
-    font-size: 13px;
-    color: var(--text-muted);
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* ─── Main layout ─── */
-  main {
-    max-width: 920px;
-    margin: 24px auto;
-    padding: 0 16px 40px;
-    display: grid;
-    gap: 20px;
-  }
-
-  /* ─── Cards ─── */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    box-shadow: var(--shadow);
-    transition: border-color var(--transition);
-  }
-  .card:hover { border-color: #3a4e7a; }
-
-  .card-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .card-title .ic {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .card-title .ic svg { width: 18px; height: 18px; }
-
-  /* Per-card accent colors */
-  .card--user   { border-top: 3px solid #6c8cff; }
-  .card--user   .ic { background: rgba(108,140,255,.15); }
-  .card--user   .ic svg { stroke: #6c8cff; }
-
-  .card--chart  { border-top: 3px solid #a78bfa; }
-  .card--chart  .ic { background: rgba(167,139,250,.15); }
-  .card--chart  .ic svg { stroke: #a78bfa; }
-
-  .card--form   { border-top: 3px solid #2dd4bf; }
-  .card--form   .ic { background: rgba(45,212,191,.15); }
-  .card--form   .ic svg { stroke: #2dd4bf; }
-
-  /* ─── Form elements ─── */
-  .field-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: flex-end;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .field label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-  }
-
-  select, input[type="number"], input[type="date"], input[type="time"] {
-    font: inherit;
-    font-size: 14px;
-    padding: 9px 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg-input);
-    color: var(--text);
-    outline: none;
-    transition: border-color var(--transition), box-shadow var(--transition);
-  }
-  select:focus, input:focus {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  select { cursor: pointer; }
-  select option { background: var(--bg-card); }
-
-  input[type="number"] { width: 100px; }
-
-  button {
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 9px 18px;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-    white-space: nowrap;
-  }
-  button:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 2px 12px var(--accent-glow);
-    transform: translateY(-1px);
-  }
-  button:active { transform: translateY(0); }
-
-  button.ghost {
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--border);
-  }
-  button.ghost:hover {
-    background: var(--accent-glow);
-    border-color: var(--accent);
-  }
-
-  /* ─── Strategy radios ─── */
-  .strategy-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-  }
-  .strategy-options label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--text);
-    cursor: pointer;
-    transition: all var(--transition);
-    background: var(--bg-input);
-  }
-  .strategy-options label:hover {
-    border-color: var(--accent);
-    background: var(--accent-glow);
-  }
-  .strategy-options input[type="radio"] {
-    accent-color: var(--accent);
-    margin: 0;
-    width: 15px;
-    height: 15px;
-  }
-  .strategy-options input[type="radio"]:checked + span {
-    color: var(--accent);
-    font-weight: 600;
-  }
-
-  /* ─── Info banner (strategy applied) ─── */
-  .info-banner {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: var(--info-bg);
-    border-left: 3px solid var(--info-border);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.6;
-  }
-  .info-banner code {
-    background: rgba(108,140,255,.15);
-    color: var(--accent);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-family: 'Cascadia Code', 'Fira Code', monospace;
-  }
-  .info-banner strong { color: #fff; }
-
-  /* ─── Week navigation ─── */
-  .week-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    gap: 12px;
-  }
-  .week-nav .week-label {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    text-align: center;
-  }
-
-  /* ─── Chart ─── */
-  .chart-container { position: relative; }
-
-  .chart {
-    position: relative;
-    height: 250px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-end;
-    padding: 0 8px 0 38px;
-    border-bottom: 2px solid var(--border);
-  }
-
-  .col {
-    flex: 1;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-  }
-
-  .bar {
-    width: 65%;
-    max-width: 52px;
-    border-radius: 6px 6px 2px 2px;
-    position: relative;
-    min-height: 3px;
-    transition: height .4s cubic-bezier(.34,1.56,.64,1);
-    background: linear-gradient(to top, var(--bar-normal), var(--bar-normal-top));
-    box-shadow: 0 0 12px rgba(108,140,255,.2);
-  }
-  .bar.crit {
-    background: linear-gradient(to top, var(--bar-crit), var(--bar-crit-top));
-    box-shadow: 0 0 12px rgba(255,92,108,.25);
-  }
-
-  .val {
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: var(--text);
-  }
-
-  .thr {
-    position: absolute;
-    left: 38px;
-    right: 0;
-    border-top: 2px dashed var(--threshold);
-    z-index: 2;
-    pointer-events: none;
-  }
-  .thr span {
-    position: absolute;
-    right: 4px;
-    top: -22px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--threshold);
-    background: var(--bg-card);
-    padding: 1px 6px;
-    border-radius: 4px;
-  }
-
-  .axis {
-    position: absolute;
-    left: 0;
-    font-size: 11px;
-    color: var(--text-dim);
-    width: 30px;
-    text-align: right;
-  }
-
-  .days {
-    display: flex;
-    gap: 8px;
-    padding: 8px 8px 0 38px;
-  }
-  .days div {
-    flex: 1;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-  .days div .day-name { font-weight: 600; }
-  .days div .day-num {
-    display: block;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-
-  /* ─── Summary stats ─── */
-  .summary {
-    display: flex;
-    gap: 16px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--bg-card-alt);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-  .stat strong { color: #fff; font-size: 15px; }
-  .legend-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 3px;
-    margin-right: 4px;
-  }
-
-  /* ─── Messages ─── */
-  .msg {
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    margin-top: 12px;
-    display: none;
-    border-left: 3px solid transparent;
-  }
-  .msg.err {
-    background: var(--error-bg);
-    color: var(--error-text);
-    border-left-color: var(--error-border);
-    display: block;
-  }
-  .msg.ok {
-    background: var(--success-bg);
-    color: var(--success-text);
-    border-left-color: var(--success-border);
-    display: block;
-  }
-
-  /* ─── Empty state ─── */
-  .empty {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 14px;
-    padding: 32px 16px;
-  }
-  .empty .empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 10px;
-    background: rgba(108,140,255,.08);
-    border-radius: 12px;
-  }
-  .empty .empty-icon svg { width: 24px; height: 24px; stroke: var(--text-dim); }
-
-  /* ─── Responsive ─── */
-  @media (max-width: 600px) {
-    header { padding: 20px 16px; }
-    header h1 { font-size: 18px; }
-    main { padding: 0 10px 30px; }
-    .card { padding: 16px; }
-    .field-group { gap: 10px; }
-    .strategy-options { gap: 6px; }
-    .strategy-options label { padding: 6px 10px; font-size: 12px; }
-    .chart { height: 200px; }
-    .summary { gap: 8px; }
-    .stat { padding: 6px 10px; font-size: 12px; }
-    .week-nav button { padding: 8px 12px; font-size: 12px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monitoreo de Higiene del Sueño - Demo Strategy</title>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-<header>
-  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6c8cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg></div>
-  <h1>Sistema de Monitoreo de Higiene del Sueño</h1>
-  <p>Demo del patrón Strategy: el criterio de "día crítico" (RN03) lo decide una estrategia intercambiable en el backend</p>
-</header>
-
-<main>
-  <!-- ── Card: Usuario y Estrategia ── -->
-  <section class="card card--user">
-    <div class="card-title"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div> Usuario y estrategia</div>
-    <div class="field-group">
-      <div class="field">
-        <label for="usuario">Usuario</label>
-        <select id="usuario"></select>
-      </div>
-      <div class="field">
-        <label for="meta">Meta de sueño (h)</label>
-        <input id="meta" type="number" step="0.5" min="1" max="24" placeholder="sin meta">
-      </div>
-      <button id="guardarMeta">Guardar meta</button>
+  <header>
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+      </svg>
     </div>
+    <h1>Sistema de Monitoreo de Higiene del Sueño</h1>
+    <p>Demo académica del patrón Strategy: el criterio de "día crítico" (RN03) lo decide una estrategia intercambiable en el backend.</p>
+    <span class="header-badge">Arquitectura de Software &middot; Patrón Strategy</span>
+  </header>
 
-    <div class="strategy-options">
-      <label><input type="radio" name="estr" value="auto" checked> <span>Automática (RN03)</span></label>
-      <label><input type="radio" name="estr" value="meta"> <span>Meta personal</span></label>
-      <label><input type="radio" name="estr" value="defecto"> <span>Umbral por defecto (6 h)</span></label>
-    </div>
-
-    <div class="info-banner" id="info"></div>
-    <div class="msg" id="msgMeta"></div>
-  </section>
-
-  <!-- ── Card: Métricas semanales ── -->
-  <section class="card card--chart">
-    <div class="card-title"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div> Métricas semanales</div>
-    <div class="week-nav">
-      <button class="ghost" id="prev">← Anterior</button>
-      <span class="week-label" id="semanaLbl"></span>
-      <button class="ghost" id="next">Siguiente →</button>
-    </div>
-    <div id="chartWrap"></div>
-    <div class="summary" id="summary"></div>
-    <div class="msg" id="msgMet"></div>
-  </section>
-
-  <!-- ── Card: Registrar sueño ── -->
-  <section class="card card--form">
-    <div class="card-title"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/><path d="M15 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg></div> Registrar sueño</div>
-    <div class="field-group">
-      <div class="field">
-        <label for="fFecha">Fecha</label>
-        <input id="fFecha" type="date">
+  <main>
+    <!-- ── Card 1: Usuario y Estrategia ── -->
+    <section class="card card--user" aria-labelledby="sec-user-title">
+      <div class="card-title" id="sec-user-title">
+        <div class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <span>Usuario y estrategia</span>
       </div>
-      <div class="field">
-        <label for="fAcostar">Se acostó</label>
-        <input id="fAcostar" type="time" value="23:00">
+
+      <div class="field-group">
+        <div class="field">
+          <label for="usuario">Usuario</label>
+          <select id="usuario" name="usuario"></select>
+        </div>
+        <div class="field">
+          <label for="meta">Meta de sueño (horas)</label>
+          <input id="meta" type="number" step="0.5" min="1" max="24" placeholder="sin meta">
+        </div>
+        <button id="guardarMeta" type="button">Guardar meta</button>
       </div>
-      <div class="field">
-        <label for="fDespertar">Despertó</label>
-        <input id="fDespertar" type="time" value="06:30">
+
+      <fieldset class="strategy-fieldset">
+        <legend class="strategy-legend">Estrategia para la gráfica principal</legend>
+        <div class="strategy-options">
+          <label for="estr_auto">
+            <input type="radio" id="estr_auto" name="estr" value="auto" checked>
+            <span>Automática (RN03)</span>
+          </label>
+          <label for="estr_meta">
+            <input type="radio" id="estr_meta" name="estr" value="meta">
+            <span>Meta personal</span>
+          </label>
+          <label for="estr_defecto">
+            <input type="radio" id="estr_defecto" name="estr" value="defecto">
+            <span>Umbral por defecto (6 h)</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="info-banner" id="info" aria-live="polite"></div>
+      <div class="msg" id="msgMeta" role="alert"></div>
+    </section>
+
+    <!-- ── Card 2: Métricas Semanales (Estrategia Activa) ── -->
+    <section class="card card--chart" aria-labelledby="sec-chart-title">
+      <div class="card-title" id="sec-chart-title">
+        <div class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="12" width="4" height="9" rx="1"/>
+            <rect x="10" y="7" width="4" height="14" rx="1"/>
+            <rect x="17" y="3" width="4" height="18" rx="1"/>
+          </svg>
+        </div>
+        <span>Métricas semanales</span>
       </div>
-      <div class="field">
-        <label for="fCal">Calificación (1-5)</label>
-        <input id="fCal" type="number" min="1" max="5" value="3" style="width:80px">
+
+      <div class="week-nav">
+        <button class="ghost" id="prev" type="button" aria-label="Semana anterior">← Anterior</button>
+        <span class="week-label" id="semanaLbl" aria-live="polite"></span>
+        <button class="ghost" id="next" type="button" aria-label="Semana siguiente">Siguiente →</button>
       </div>
-      <button id="guardarReg">Guardar registro</button>
-    </div>
-    <div class="msg" id="msgReg"></div>
-  </section>
-</main>
 
-<script>
-const $ = id => document.getElementById(id);
-const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-let usuarios = [];
-let fechaRef = new Date();
+      <div id="chartWrap" aria-live="polite"></div>
+      <div class="summary" id="summary"></div>
+      <div class="msg" id="msgMet" role="alert"></div>
 
-const iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); };
-const lunesDe = d => { const x = new Date(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
-const estrategia = () => document.querySelector('input[name="estr"]:checked').value;
-const mostrar = (id, texto, tipo) => { const e = $(id); e.textContent = texto || ""; e.className = "msg" + (texto ? " " + tipo : ""); };
+      <!-- Panel "¿Qué hizo el backend?" (Traza del patrón Strategy) -->
+      <div class="trace-panel">
+        <div class="trace-header">
+          <span>¿Qué hizo el backend?</span>
+          <span class="badge-trace">Traza del patrón Strategy</span>
+        </div>
+        <pre class="trace-content" id="backendTrace" aria-label="Traza de ejecución del backend"></pre>
+        <div class="trace-note">
+          📌 Nota: Esta traza didáctica se reconstruye con la respuesta de la API para ilustrar cómo el backend ejecutó el patrón Strategy.
+        </div>
+      </div>
+    </section>
 
-async function api(url, opts) {
-  const r = await fetch(url, opts);
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data.detail || "Error " + r.status);
-  return data;
-}
+    <!-- ── Card 3: Comparación Lado a Lado de Estrategias ── -->
+    <section class="card card--compare" aria-labelledby="sec-compare-title">
+      <div class="card-title" id="sec-compare-title">
+        <div class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 3h5v5"/>
+            <path d="M4 20L21 3"/>
+            <path d="M21 16v5h-5"/>
+            <path d="M15 15l6 6"/>
+            <path d="M4 4l5 5"/>
+          </svg>
+        </div>
+        <span>Comparación lado a lado de estrategias</span>
+      </div>
+      <p class="card-desc">
+        Evaluación paralela de la MISMA semana del usuario seleccionado con <code>meta</code> y <code>defecto</code>.
+        Resalta los días donde el cambio de estrategia altera el resultado crítico.
+      </p>
 
-async function cargarUsuarios() {
-  usuarios = await api("/api/usuarios");
-  const sel = $("usuario"), actual = sel.value;
-  sel.innerHTML = usuarios.map(u => `<option value="${u.id}">${u.nombre}</option>`).join("");
-  if (actual) sel.value = actual;
-  sincronizarMeta();
-}
+      <div id="compareWrap" aria-live="polite"></div>
+    </section>
 
-function sincronizarMeta() {
-  const u = usuarios.find(x => x.id == $("usuario").value);
-  $("meta").value = u && u.meta_sueno != null ? u.meta_sueno : "";
-}
+    <!-- ── Card 4: Registrar Sueño ── -->
+    <section class="card card--form" aria-labelledby="sec-form-title">
+      <div class="card-title" id="sec-form-title">
+        <div class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+            <path d="M15 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>
+          </svg>
+        </div>
+        <span>Registrar sueño</span>
+      </div>
 
-async function cargarMetricas() {
-  mostrar("msgMet", "");
-  const uid = $("usuario").value;
-  try {
-    const m = await api(`/api/usuarios/${uid}/metricas?semana=${iso(fechaRef)}&estrategia=${estrategia()}`);
-    pintar(m);
-  } catch (e) {
-    $("chartWrap").innerHTML = ""; $("summary").innerHTML = ""; $("info").innerHTML = "";
-    mostrar("msgMet", e.message, "err");
-  }
-}
+      <div class="field-group">
+        <div class="field">
+          <label for="fFecha">Fecha</label>
+          <input id="fFecha" type="date">
+        </div>
+        <div class="field">
+          <label for="fAcostar">Se acostó</label>
+          <input id="fAcostar" type="time" value="23:00">
+        </div>
+        <div class="field">
+          <label for="fDespertar">Despertó</label>
+          <input id="fDespertar" type="time" value="06:30">
+        </div>
+        <div class="field" style="max-width: 130px;">
+          <label for="fCal">Calificación (1-5)</label>
+          <input id="fCal" type="number" min="1" max="5" value="3">
+        </div>
+        <button id="guardarReg" type="button">Guardar registro</button>
+      </div>
 
-function pintar(m) {
-  const lunes = new Date(m.semana_inicio + "T00:00:00"), fin = new Date(m.semana_fin + "T00:00:00");
-  const fmt = d => d.toLocaleDateString("es-CO", { day: "numeric", month: "short" });
-  $("semanaLbl").textContent = `${fmt(lunes)} — ${fmt(fin)}`;
-  $("info").innerHTML = `Estrategia aplicada: <code>${m.estrategia.clase}</code> &middot; umbral: <strong>${m.estrategia.umbral} h</strong>`
-    + ` &middot; meta del usuario: ${m.meta_sueno != null ? m.meta_sueno + " h" : "no definida"}`;
+      <div class="msg" id="msgReg" role="alert"></div>
+    </section>
+  </main>
 
-  const porFecha = Object.fromEntries(m.dias.map(d => [d.fecha, d]));
-  const max = Math.max(10, m.estrategia.umbral + 1, ...m.dias.map(d => d.horas + 1));
-  let cols = "", etiquetas = "";
-  for (let i = 0; i < 7; i++) {
-    const f = new Date(lunes); f.setDate(f.getDate() + i);
-    const d = porFecha[iso(f)];
-    etiquetas += `<div><span class="day-name">${DIAS[i]}</span><span class="day-num">${f.getDate()}</span></div>`;
-    cols += d
-      ? `<div class="col"><div class="val">${d.horas.toFixed(1)}</div><div class="bar ${d.critico ? "crit" : ""}" style="height:${(d.horas / max) * 100}%"></div></div>`
-      : `<div class="col"></div>`;
-  }
-  const ticks = [0, 2, 4, 6, 8, 10].filter(t => t <= max).map(t => `<div class="axis" style="bottom:calc(${(t / max) * 100}% - 7px)">${t}</div>`).join("");
-  const thrBottom = (m.estrategia.umbral / max) * 100;
-  $("chartWrap").innerHTML = m.dias.length
-    ? `<div class="chart-container"><div class="chart">${ticks}<div class="thr" style="bottom:${thrBottom}%"><span>umbral ${m.estrategia.umbral} h</span></div>${cols}</div><div class="days">${etiquetas}</div></div>`
-    : `<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg></div>No hay registros en esta semana.</div>`;
-
-  $("summary").innerHTML = m.dias.length
-    ? `<div class="stat">Promedio semanal: <strong>&nbsp;${m.promedio.toFixed(1)} h</strong></div>
-       <div class="stat">Días críticos: <strong>&nbsp;${m.dias_criticos.length}</strong></div>
-       <div class="stat"><span class="legend-dot" style="background:var(--bar-normal)"></span>Normal &nbsp;&nbsp; <span class="legend-dot" style="background:var(--bar-crit)"></span>Crítico</div>`
-    : "";
-}
-
-$("usuario").onchange = () => { sincronizarMeta(); cargarMetricas(); };
-document.querySelectorAll('input[name="estr"]').forEach(r => r.onchange = cargarMetricas);
-$("prev").onclick = () => { fechaRef.setDate(fechaRef.getDate() - 7); cargarMetricas(); };
-$("next").onclick = () => { fechaRef.setDate(fechaRef.getDate() + 7); cargarMetricas(); };
-
-$("guardarMeta").onclick = async () => {
-  const v = $("meta").value;
-  try {
-    await api(`/api/usuarios/${$("usuario").value}/meta`, {
-      method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ meta_sueno: v === "" ? null : parseFloat(v) })
-    });
-    mostrar("msgMeta", v === "" ? "Meta eliminada: con 'Automática' se usará el umbral de 6 h." : "Meta guardada.", "ok");
-    await cargarUsuarios(); cargarMetricas();
-  } catch (e) { mostrar("msgMeta", e.message, "err"); }
-};
-
-$("guardarReg").onclick = async () => {
-  try {
-    await api(`/api/usuarios/${$("usuario").value}/registros`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fecha: $("fFecha").value, hora_acostarse: $("fAcostar").value,
-                             hora_despertar: $("fDespertar").value, calificacion: parseInt($("fCal").value) })
-    });
-    mostrar("msgReg", "Registro guardado.", "ok");
-    fechaRef = new Date($("fFecha").value + "T00:00:00");
-    cargarMetricas();
-  } catch (e) { mostrar("msgReg", e.message, "err"); }
-};
-
-(async () => {
-  const hoy = new Date(); hoy.setDate(hoy.getDate() - 1);
-  $("fFecha").value = iso(hoy);
-  await cargarUsuarios();
-  cargarMetricas();
-})();
-</script>
+  <script src="/static/app.js"></script>
 </body>
 </html>
